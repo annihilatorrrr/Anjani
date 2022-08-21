@@ -366,6 +366,9 @@ class SpamPrediction(plugin.Plugin):
             user = None
 
         text_norm = self._normalize_text(text)
+        if len(text_norm.split()) < 5:  # Skip short messages
+            return
+
         response = await self._predict(text_norm)
         if response.size == 0:
             return
@@ -445,6 +448,7 @@ class SpamPrediction(plugin.Plugin):
                     await self.db.insert_one(
                         {
                             "_id": content_hash,
+                            "user": identifier,
                             "text": text_norm,
                             "spam": [],
                             "ham": [],
