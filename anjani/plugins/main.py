@@ -221,6 +221,29 @@ class Main(plugin.Plugin):
                 if rules_re.search(ctx.input):
                     plug: "Rules" = self.bot.plugins["Rules"]  # type: ignore
                     return await plug.start_rules(ctx)
+                elif self.bot.languages["en"].get(ctx.input + "-help"):
+                    text_lang = await self.text(
+                        chat.id, f"{ctx.input}-help", username=self.bot.user.username
+                    )
+                    text = (
+                        f"Here is the help for the **{ctx.input.capitalize()}** "
+                        f"plugin:\n\n{text_lang}"
+                    )
+                    await ctx.respond(
+                        text,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        await self.text(chat.id, "back-button"),
+                                        callback_data="help_back",
+                                    )
+                                ]
+                            ]
+                        ),
+                        parse_mode=ParseMode.MARKDOWN,
+                    )
+                    return
 
             permission = [
                 "change_info",
